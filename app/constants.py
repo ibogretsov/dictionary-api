@@ -1,3 +1,6 @@
+import enum
+
+
 SINGE_WORD_REGEX = r'^[a-z]*$'
 
 # Error messages
@@ -8,3 +11,8 @@ TRANSLATOR_CLIENT_ERROR = (
     'Something went wrong. Please try one more time later.'
 )
 WORD_NOT_FOUND = "Word '{word}' not found."
+
+
+class SortTypeEnum(str, enum.Enum):
+    asc = 'asc'
+    desc = 'desc'

@@ -7,6 +7,7 @@ from fastapi import Path
 from fastapi import Query
 from fastapi import status
 from fastapi.responses import Response
+import fastapi_pagination as fa_pagination
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app import constants
@@ -51,30 +52,28 @@ async def get_word_details(
     return word_info
 
 
-@router.get('/')
+@router.get(
+    '/',
+    response_model=fa_pagination.Page[schemas.WordInfo],
+    response_model_exclude_none=True,
+)
 async def get_words(
-        page: int = Query(0),
-        page_size: int = Query(50),
         search: str = Query(None),
-        with_tr: bool = Query(False),
-        with_ex: bool = Query(False),
-        with_def: bool = Query(False),
+        translations: bool = Query(False, title='Include translations'),
+        examples: bool = Query(False, title='Include examples'),
+        definitions: bool = Query(False, title='Include definitions'),
+        sort: constants.SortTypeEnum = Query(constants.SortTypeEnum.asc.value),
         db: AsyncIOMotorDatabase = Depends(deps.get_db)
 ) -> Any:
-    search_params = ({} if not search
-                     else {'word': {'$regex': search, '$options': 'i'}})
-    columns_map = {'_id': 0}
-    if not with_tr:
-        columns_map['translations'] = 0
-    if not with_ex:
-        columns_map['examples'] = 0
-    if not with_def:
-        columns_map['definitions'] = 0
-    result = await (db.words
-                      .find(search_params, columns_map)
-                      .skip(page)
-                      .to_list(page_size))
-    return result
+    word_manager = manager.WordDBManager(db)
+    result = await word_manager.get_words(
+        sort,
+        search_pattern=search,
+        translations=translations,
+        examples=examples,
+        definitions=definitions
+    )
+    return fa_pagination.paginate(result)
 
 
 @router.delete(
