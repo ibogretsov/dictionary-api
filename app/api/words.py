@@ -56,7 +56,7 @@ async def get_word_details(
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Something went wrong. Please try one more time later.'
+                detail=constants.TRANSLATOR_CLIENT_ERROR
             )
         validators.validate_translated_word(translated_data)
         parser: data_parser.Parser = data_parser.Parser(
@@ -109,7 +109,7 @@ async def get_words(
             'content': {
                 'application/json': {
                     'example': {
-                        'detail': "Word 'word' not found."
+                        'detail': constants.WORD_NOT_FOUND.format(word='word')
                     }
                 }
             }
@@ -132,5 +132,5 @@ async def delete_word(
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Word '{word}' not found."
+        detail=constants.WORD_NOT_FOUND.format(word=word)
     )
