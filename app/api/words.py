@@ -8,7 +8,7 @@ from fastapi import Query
 from fastapi import status
 from fastapi.responses import Response
 import fastapi_pagination as fa_pagination
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from pymongo.database import Database
 
 from app import constants
 from app import deps
@@ -32,7 +32,7 @@ router = APIRouter(prefix='/words', tags=['words'])
             }
         }
     })
-async def get_word_details(
+def get_word_details(
         response: Response,
         word: str = Path(
             ...,
@@ -41,13 +41,13 @@ async def get_word_details(
                             translations, synonyms and examples""",
             regex=constants.SINGE_WORD_REGEX
         ),
-        db: AsyncIOMotorDatabase = Depends(deps.get_db),
+        db: Database = Depends(deps.get_db),
 ):
     word_manager = manager.WordDBManager(db)
-    word_info = await word_manager.get_word(word)
+    word_info = word_manager.get_word(word)
     if word_info is None:
         word_info = GoogleTranslateClient().get_word_info(word)
-        await word_manager.insert_word_info(word_info)
+        word_manager.insert_word_info(word_info)
         response.status_code = status.HTTP_201_CREATED
     return word_info
 
@@ -57,16 +57,16 @@ async def get_word_details(
     response_model=fa_pagination.Page[schemas.WordInfo],
     response_model_exclude_none=True,
 )
-async def get_words(
+def get_words(
         search: str = Query(None),
         translations: bool = Query(False, title='Include translations'),
         examples: bool = Query(False, title='Include examples'),
         definitions: bool = Query(False, title='Include definitions'),
         sort: constants.SortTypeEnum = Query(constants.SortTypeEnum.asc.value),
-        db: AsyncIOMotorDatabase = Depends(deps.get_db)
+        db: Database = Depends(deps.get_db)
 ) -> Any:
     word_manager = manager.WordDBManager(db)
-    result = await word_manager.get_words(
+    result = word_manager.get_words(
         sort,
         search_pattern=search,
         translations=translations,
@@ -92,7 +92,7 @@ async def get_words(
         }
     }
 )
-async def delete_word(
+def delete_word(
         word: str = Path(
             ...,
             title='Word to delete',
@@ -100,10 +100,10 @@ async def delete_word(
                             examples and translations""",
             regex=constants.SINGE_WORD_REGEX
         ),
-        db: AsyncIOMotorDatabase = Depends(deps.get_db)
+        db: Database = Depends(deps.get_db)
 ) -> Response:
     word_manager = manager.WordDBManager(db)
-    result = await word_manager.delete_word(word)
+    result = word_manager.delete_word(word)
     if result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     raise HTTPException(

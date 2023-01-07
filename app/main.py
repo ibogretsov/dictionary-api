@@ -20,12 +20,12 @@ add_pagination(app)
         'Simple healthchecker to be sure that everying was set up correct.'
     )
 )
-async def index() -> dict[str, str]:
+def index() -> dict[str, str]:
     return {'detail': 'HealthCheck'}
 
 
 @app.exception_handler(GoogleTranslateClientError)
-async def google_translator_exception_handler(
+def google_translator_exception_handler(
     request: Request,
     exc: GoogleTranslateClientError
 ) -> JSONResponse:

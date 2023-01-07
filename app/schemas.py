@@ -9,6 +9,7 @@ class SynonymValueModel(BaseModel):
 
 
 class DefinitionValueModel(BaseModel):
+    # rename to domains. Can have multiplay values
     type: str
     value: str
     synonyms: Optional[List[SynonymValueModel]]

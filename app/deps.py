@@ -1,16 +1,14 @@
 from typing import Generator
 
-import motor.motor_asyncio
+import pymongo
 
 from app.settings.config import settings
 
 
 def get_db() -> Generator:
     try:
-        client = motor.motor_asyncio.AsyncIOMotorClient(
-            settings.dictionary_api_mongodb_url
-        )
-        db = client.get_database('dictionarydb')
+        client = pymongo.MongoClient(settings.dictionary_api_mongodb_url)
+        db = client.get_database(settings.db_name)
         yield db
     finally:
         client.close()
