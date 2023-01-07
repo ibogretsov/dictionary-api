@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+  mongodb:
+    ports:
+      - 27017:27017
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+    networks:
+      - dictionary_api_network
+
+  backend:
+    tty: true
+    stdin_open: true
+    ports:
+      - 8000:8000
+    build:
+      context: .
+    volumes:
+      - .:/app:cached
+    networks:
+      - dictionary_api_network
+    command: uvicorn app.main:app --host=0.0.0.0 --port=8000 --reload
+    env_file:
+      - .docker.base.env
+
+networks:
+  dictionary_api_network:
