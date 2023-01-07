@@ -13,7 +13,9 @@ add_pagination(app)
 @app.get(
     '/',
     summary='health check',
-    description='Simple healthchecker to be sure that everying was set up correct.'
+    description=(
+        'Simple healthchecker to be sure that everying was set up correct.'
+    )
 )
 async def index() -> dict[str, str]:
     return {'detail': 'HealthCheck'}

@@ -1,12 +1,9 @@
-from typing import Any, Mapping, TypeVar
+from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo.results import DeleteResult
 from pymongo.results import InsertOneResult
 
-
-C = TypeVar('C')
-DocumentType = TypeVar("DocumentType", bound=Mapping[str, Any])
 
 class WordDBManager:
 

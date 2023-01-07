@@ -6,7 +6,6 @@ from fastapi import HTTPException
 from fastapi import Path
 from fastapi import Query
 from fastapi import status
-from fastapi.responses import JSONResponse
 from fastapi.responses import Response
 from googletrans import Translator
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -94,7 +93,8 @@ async def get_words(
         columns_map['examples'] = 0
     if not with_def:
         columns_map['definitions'] = 0
-    result = await (db.words.find(search_params,columns_map)
+    result = await (db.words
+                      .find(search_params, columns_map)
                       .skip(page)
                       .to_list(page_size))
     return result

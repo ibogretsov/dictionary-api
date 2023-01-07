@@ -52,7 +52,9 @@ class Parser:
         Get and process translations. Save it as translations.
         Get and process definitions. Save it as definitions.
         """
-        self.parsed_data['examples'] = self.__process_examples(self.raw_examples)
+        self.parsed_data['examples'] = self.__process_examples(
+            self.raw_examples
+        )
         self.parsed_data['translations'] = self.__process_translations(
             self.raw_translations
         )
@@ -145,7 +147,7 @@ class Parser:
     def __get_synonyms(
             self,
             raw_synonyms_data: list[Any]
-        ) -> list[dict[str, str | list[str]]]:
+    ) -> list[dict[str, str | list[str]]]:
         """Process synonyms for each definition."""
         processed_synonyms: list[dict[str, str | list[str]]] = []
         # First process general synonyms, e.g. Synonyms withou any additional
