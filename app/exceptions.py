@@ -1,0 +1,2 @@
+class GoogleTranslateClientError(Exception):
+    pass

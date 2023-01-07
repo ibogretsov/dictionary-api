@@ -7,15 +7,13 @@ from fastapi import Path
 from fastapi import Query
 from fastapi import status
 from fastapi.responses import Response
-from googletrans import Translator
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app import constants
-from app import data_parser
 from app import deps
 from app import schemas
-from app import validators
 from app.db import manager
+from app.google_client import GoogleTranslateClient
 
 
 router = APIRouter(prefix='/words', tags=['words'])
@@ -47,28 +45,7 @@ async def get_word_details(
     word_manager = manager.WordDBManager(db)
     word_info = await word_manager.get_word(word)
     if word_info is None:
-        translator = Translator(raise_exception=True)
-        # Unfortunately translator does not have async feature. We can run it in
-        # separate thread to simulate async code
-        # TODO (ibogretsov): add threading to run
-        try:
-            translated_data = translator.translate(word, dest='ru', src='en')
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=constants.TRANSLATOR_CLIENT_ERROR
-            )
-        validators.validate_translated_word(translated_data)
-        parser: data_parser.Parser = data_parser.Parser(
-            translated_data.extra_data['parsed'][3]
-        )
-        parser.parse_data()
-        word_info = {
-            'word': word,
-            'definitions': parser.parsed_data['definitions'],
-            'translations': parser.parsed_data['translations'],
-            'examples': parser.parsed_data['examples']
-        }
+        word_info = GoogleTranslateClient().get_word_info(word)
         await word_manager.insert_word_info(word_info)
         response.status_code = status.HTTP_201_CREATED
     return word_info
