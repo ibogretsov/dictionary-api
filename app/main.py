@@ -5,11 +5,29 @@ from fastapi.responses import JSONResponse
 from fastapi_pagination import add_pagination
 
 from app import api
+from app.core import config
 from app.exceptions import GoogleTranslateClientError
 from app.exceptions import ParserError
 
 
-app = FastAPI()
+def _generate_description():
+    from googletrans import constants
+
+    settings = config.get_settings()
+    source_language = constants.LANGUAGES.get(
+        settings.dictionary_api_source_language
+    ).capitalize()
+    target_language = constants.LANGUAGES.get(
+        settings.dictionary_api_target_language
+    ).capitalize()
+    description = f"""Simple API which provides for words for source
+        language {source_language} translations from {target_language},
+        definitions, synonyms and examples.
+    """
+    return description
+
+
+app = FastAPI(description=_generate_description())
 app.include_router(api.api_router)
 add_pagination(app)
 

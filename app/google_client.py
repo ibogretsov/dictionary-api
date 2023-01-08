@@ -11,15 +11,12 @@ from app.exceptions import GoogleTranslateClientError
 
 class GoogleTranslateClient:
 
-    def __init__(self) -> None:
+    def __init__(self, source_language: str, target_language: str) -> None:
         # Third party library to send request to the
         # https://translate.google.com . Works pretty good.
         self._translator = Translator(raise_exception=True)
-        # It can be managed via environment variables.
-        # TODO (ibogretsov) Add opportunity to set up target/source languages
-        # via environment variables on startup.
-        self._target_language = 'ru'
-        self._source_language = 'en'
+        self._target_language = target_language
+        self._source_language = source_language
 
     @property
     def target_language(self) -> str:

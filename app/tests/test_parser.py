@@ -72,8 +72,8 @@ def parsed_data_all_fields(parsed_data_translations_and_examples):
     ('translated_data_all_fields', 'parsed_data_all_fields'),
 ))
 def test_parse_data(request, raw, exp):
-    raw_data = request.getfixturevalue(raw)
+    translated_data = request.getfixturevalue(raw)
     exp_data = request.getfixturevalue(exp)
-    parser = Parser(raw_data)
+    parser = Parser(translated_data)
     parsed = parser.parse_data()
     assert parsed == exp_data

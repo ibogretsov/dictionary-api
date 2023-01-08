@@ -74,12 +74,8 @@ class TestDeleteWord:
             word=word
         )
 
-    def test_success(self, client: TestClient) -> None:
-        word = 'word'
-        resp = client.post(self.URL.format(word=word))
-        assert resp.status_code == status.HTTP_201_CREATED
-
-        resp = client.delete(self.URL.format(word=word))
+    def test_success(self, client: TestClient, word_word) -> None:
+        resp = client.delete(self.URL.format(word=word_word.json()['word']))
         assert resp.status_code == status.HTTP_204_NO_CONTENT
 
         resp = client.get('/api/words')

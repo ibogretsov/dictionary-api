@@ -9,18 +9,17 @@ import pytest
 from pytest import FixtureRequest
 from pytest_mock import MockerFixture
 
-from app import deps
+from app.core import config
 from app.main import app
-from app.settings.config import Settings
 from app.tests import constants as test_constants
 from app.tests import utils as test_utils
 
 
-def get_settings_override() -> Settings:
-    return Settings(db_name='testdb') # type: ignore
+def get_settings_override() -> config.Settings:
+    return config.Settings(db_name='testdb') # type: ignore
 
 
-app.dependency_overrides[deps.get_settings] = get_settings_override
+app.dependency_overrides[config.get_settings] = get_settings_override
 
 
 @pytest.fixture

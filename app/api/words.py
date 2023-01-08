@@ -13,6 +13,7 @@ from pymongo.database import Database
 from app import constants
 from app import deps
 from app import schemas
+from app.core import config
 from app.db import manager
 from app.google_client import GoogleTranslateClient
 
@@ -47,7 +48,12 @@ def get_word_details(
     word_manager = manager.WordDBManager(db)
     word_info = word_manager.get_word(word)
     if word_info is None:
-        word_info = GoogleTranslateClient().get_word_info(word)
+        settings = config.get_settings()
+        client = GoogleTranslateClient(
+            settings.dictionary_api_source_language,
+            settings.dictionary_api_target_language
+        )
+        word_info = client.get_word_info(word)
         word_manager.insert_word_info(word_info)
         response.status_code = status.HTTP_201_CREATED
     return word_info

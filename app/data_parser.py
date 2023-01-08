@@ -17,23 +17,23 @@ class Parser:
     more readable data.
     """
 
-    def __init__(self, raw_data: Any) -> None:
-        self._raw_data: list[Any] = raw_data
+    def __init__(self, translated_data: Any) -> None:
+        self._translated_data: list[Any] = translated_data
         self._parsed_data: dict[str, Any] = {}
 
     @property
-    def raw_data(self) -> list[Any]:
-        return self._raw_data
+    def translated_data(self) -> list[Any]:
+        return self._translated_data
 
     @property
     def raw_examples(self) -> list[Any]:
         """Get raw examples. Always stored on place with index 2."""
-        return self._raw_data[2][0] if self._raw_data[2] else []
+        return self._translated_data[2][0] if self._translated_data[2] else []
 
     @property
     def raw_translations(self) -> list[Any]:
         """Get raw translations. Always stored on place with index 5."""
-        return self._raw_data[5][0] if self._raw_data[5] else []
+        return self._translated_data[5][0] if self._translated_data[5] else []
 
     @property
     def raw_definitions(self) -> list[Any]:
@@ -42,7 +42,7 @@ class Parser:
         Definitions store synonyms as well. It is logical, because synonyms
         without definitions are not very helpfull.
         """
-        return self._raw_data[1][0] if self._raw_data[1] else []
+        return self._translated_data[1][0] if self._translated_data[1] else []
 
     @property
     def parsed_data(self) -> dict[str, Any]:
