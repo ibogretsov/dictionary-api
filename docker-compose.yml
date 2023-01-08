@@ -3,10 +3,12 @@ services:
   mongodb:
     ports:
       - 27017:27017
-    image: mongo:latest
+    image: mongo:6.0
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mongo
       - MONGO_INITDB_ROOT_PASSWORD=mongo
+    volumes:
+      - mongo_data:/data/db
     networks:
       - dictionary_api_network
 
@@ -17,8 +19,9 @@ services:
       - 8000:8000
     build:
       context: .
-    image: &backend_image
-      dictionary-api_backend
+    image: dictionary-api-backend-dev
+    depends_on:
+      - mongodb
     volumes:
       - .:/app:cached
     networks:
@@ -32,7 +35,9 @@ services:
     stdin_open: true
     build:
       context: .
-    image: dictionary-api_backend-test
+    image: dictionary-api-backend-test
+    depends_on:
+      - mongodb
     volumes:
       - .:/app:cached
     networks:
@@ -43,3 +48,6 @@ services:
 
 networks:
   dictionary_api_network:
+
+volumes:
+  mongo_data:
