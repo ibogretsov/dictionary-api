@@ -42,7 +42,7 @@ services:
       - .:/app:cached
     networks:
       - dictionary_api_network
-    command: pytest .
+    command: pytest --cov=./ app/tests
     env_file:
       - .docker.base.env
 
