@@ -1,9 +1,12 @@
 from fastapi import status
 from fastapi.testclient import TestClient
+from httpx import Response
 import pytest
 from pytest_mock import MockerFixture
 
 from app import constants
+from app.tests import constants as test_constants
+from app.tests import utils as test_utils
 
 
 class TestGetWordDetails:
@@ -21,25 +24,30 @@ class TestGetWordDetails:
         resp = client.post(self.URL.format(word=word_value))
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    # add mock
-    def test_api_get_word_details_word_is_not_real(self, client: TestClient) -> None:
+    def test_api_get_word_details_word_is_not_real(self, client: TestClient, mocker: MockerFixture) -> None:
         word = 'notexistingword'
-        resp = client.post(self.URL.format(word=word))
+        return_value = (
+            test_constants.WORD_NOTEXISTINGWORD_EXP_RAW_TRANSLATE_DATA,
+            Response(status_code=status.HTTP_200_OK)
+        )
+        resp = test_utils.get_word_details(client, mocker, word, return_value)
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
         assert resp.json()['detail'] == constants.NOT_VALID_WORD_TO_GET_INFO
 
     def test_api_get_word_details_first_from_api(
-            self, client: TestClient
+            self, client: TestClient, mocker: MockerFixture
     ) -> None:
         word = 'test'
-        resp = client.post(self.URL.format(word=word))
+        return_value = (
+            test_constants.WORD_TEST_EXP_RAW_TRANSLATE_DATA,
+            Response(status_code=status.HTTP_200_OK)
+        )
+        resp = test_utils.get_word_details(client, mocker, word, return_value)
         assert resp.status_code == status.HTTP_201_CREATED
 
     def test_api_get_word_details_word_exists_in_db(
-            self, client: TestClient) -> None:
-        word = 'test'
-        resp = client.post(self.URL.format(word=word))
-        assert resp.status_code == status.HTTP_201_CREATED
+            self, client: TestClient, word_word) -> None:
+        word = 'word'
         resp = client.post(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_200_OK
 
