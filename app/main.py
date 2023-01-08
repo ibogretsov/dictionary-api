@@ -54,7 +54,7 @@ def google_translator_exception_handler(
 
 
 @app.exception_handler(ParserError)
-def google_translator_exception_handler(
+def parser_exception_handler(
     request: Request,
     exc: ParserError
 ) -> JSONResponse:

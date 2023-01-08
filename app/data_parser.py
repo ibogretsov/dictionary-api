@@ -65,7 +65,7 @@ class Parser:
             self.parsed_data['definitions'] = self.__get_definitions(
                 self.raw_definitions
             )
-        except (KeyError, ValueError, IndexError, TypeError) as exc:
+        except (KeyError, ValueError, IndexError, TypeError):
             raise ParserError(constants.TRANSLATOR_CLIENT_ERROR)
         return self.parsed_data
 

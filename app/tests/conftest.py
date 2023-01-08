@@ -16,7 +16,7 @@ from app.tests import utils as test_utils
 
 
 def get_settings_override() -> config.Settings:
-    return config.Settings(db_name='testdb') # type: ignore
+    return config.Settings(db_name='testdb')  # type: ignore
 
 
 app.dependency_overrides[config.get_settings] = get_settings_override

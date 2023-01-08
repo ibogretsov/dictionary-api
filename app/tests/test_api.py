@@ -24,7 +24,11 @@ class TestGetWordDetails:
         resp = client.post(self.URL.format(word=word_value))
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    def test_api_get_word_details_word_is_not_real(self, client: TestClient, mocker: MockerFixture) -> None:
+    def test_api_get_word_details_word_is_not_real(
+            self,
+            client: TestClient,
+            mocker: MockerFixture
+    ) -> None:
         word = 'notexistingword'
         return_value = (
             test_constants.WORD_NOTEXISTINGWORD_EXP_RAW_TRANSLATE_DATA,
