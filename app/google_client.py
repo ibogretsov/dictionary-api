@@ -30,10 +30,6 @@ class GoogleTranslateClient:
         return self._source_language
 
     def _translate_word(self, word: str) -> Translated:
-        # Unfortunately translator does not have async feature. It can ben ran
-        # in separate thread to simulate async code.
-        # TODO (ibogretsov): add runring in separate thread, when tests will be
-        # successfully adapted for async
         try:
             translated_data = self._translator.translate(
                 word,

@@ -31,7 +31,8 @@ router = APIRouter(prefix='/words', tags=['words'])
                 }
             }
         }
-    })
+    },
+    response_model_exclude_none=True)
 def get_word_details(
         response: Response,
         word: str = Path(

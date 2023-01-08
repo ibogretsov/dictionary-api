@@ -1,5 +1,8 @@
 from typing import Any
 
+from app import constants
+from app.exceptions import ParserError
+
 
 class Parser:
     """Parser to extract definitions, translations and examples from data.
@@ -52,15 +55,18 @@ class Parser:
         Get and process translations. Save it as translations.
         Get and process definitions. Save it as definitions.
         """
-        self.parsed_data['examples'] = self.__process_examples(
-            self.raw_examples
-        )
-        self.parsed_data['translations'] = self.__process_translations(
-            self.raw_translations
-        )
-        self.parsed_data['definitions'] = self.__get_definitions(
-            self.raw_definitions
-        )
+        try:
+            self.parsed_data['examples'] = self.__process_examples(
+                self.raw_examples
+            )
+            self.parsed_data['translations'] = self.__process_translations(
+                self.raw_translations
+            )
+            self.parsed_data['definitions'] = self.__get_definitions(
+                self.raw_definitions
+            )
+        except (KeyError, ValueError, IndexError, TypeError) as exc:
+            raise ParserError(constants.TRANSLATOR_CLIENT_ERROR)
         return self.parsed_data
 
     def __process_examples(self, raw_examples: list[list[str]]) -> list[str]:
@@ -108,10 +114,7 @@ class Parser:
         """
 
         def _is_general_definition(definition: list[Any]) -> bool:
-            return (
-                len(raw_definition) < 5 or
-                not isinstance(raw_definition[4], list)
-            )
+            return (len(definition) < 5 or not isinstance(definition[4], list))
 
         processed_definitions: list[dict[str, Any]] = []
         for group_raw_definitions in raw_definitions:
@@ -123,13 +126,14 @@ class Parser:
             raw_definitions_data = group_raw_definitions[1]
             for raw_definition in raw_definitions_data:
                 definition: dict[str, str | list[Any]] = {
-                    'type': 'general',
                     'value': raw_definition[0]
                 }
                 if not _is_general_definition(raw_definition):
-                    definition['type'] = raw_definition[4][0][0]
+                    definition['domains'] = [
+                        domain[0] for domain in raw_definition[4]
+                    ]
 
-                if len(raw_definition) >= 2:
+                if len(raw_definition) >= 2 and raw_definition[1]:
                     definition['example'] = raw_definition[1]
 
                 # There are synonyms. Synonyms are on place with index 6

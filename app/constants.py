@@ -1,7 +1,7 @@
 import enum
 
 
-SINGE_WORD_REGEX = r'^[a-z]*$'
+SINGE_WORD_REGEX = r'(^[a-z]*|I)$'
 
 # Error messages
 NOT_VALID_WORD_TO_GET_INFO = (
