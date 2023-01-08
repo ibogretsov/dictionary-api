@@ -1,7 +1,7 @@
-
 from fastapi import status
 from fastapi.testclient import TestClient
 import pytest
+from pytest_mock import MockerFixture
 
 from app import constants
 
@@ -10,33 +10,33 @@ class TestGetWordDetails:
 
     URL = '/api/words/{word}'
 
-    @pytest.mark.parametrize('word_value,',
-        (' ', ' word', 'word ', 'word and', '1')
-    )
+    @pytest.mark.parametrize('word_value,', (
+        ' ', ' word', 'word ', 'word and', '1'
+    ))
     def test_api_get_word_details_not_valid_word_regrex(
             self,
             client: TestClient,
             word_value: str
-    ):
+    ) -> None:
         resp = client.post(self.URL.format(word=word_value))
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    # TODO: Add mock
-    def test_api_get_word_details_word_is_not_real(self, client: TestClient):
+    # add mock
+    def test_api_get_word_details_word_is_not_real(self, client: TestClient) -> None:
         word = 'notexistingword'
         resp = client.post(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
         assert resp.json()['detail'] == constants.NOT_VALID_WORD_TO_GET_INFO
 
     def test_api_get_word_details_first_from_api(
-            self, client: TestClient, mongodb
-    ):
+            self, client: TestClient
+    ) -> None:
         word = 'test'
         resp = client.post(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_201_CREATED
 
     def test_api_get_word_details_word_exists_in_db(
-            self, client: TestClient, mongodb):
+            self, client: TestClient) -> None:
         word = 'test'
         resp = client.post(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_201_CREATED
@@ -44,9 +44,8 @@ class TestGetWordDetails:
         assert resp.status_code == status.HTTP_200_OK
 
     def test_api_get_word_details_something_went_wrong(
-            self, client: TestClient, mongodb, mocker
-    ):
-        # TODO: replace with mocker
+            self, client: TestClient, mocker: MockerFixture
+    ) -> None:
         mock_path = 'googletrans.client.Translator.translate'
         mocker.patch(mock_path, side_effect=Exception('Bad request'))
         word = 'test'
@@ -59,7 +58,7 @@ class TestDeleteWord:
 
     URL = '/api/words/{word}'
 
-    def test_word_not_in_database(self, client: TestClient, mongodb):
+    def test_word_not_in_database(self, client: TestClient) -> None:
         word = 'word'
         resp = client.delete(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_404_NOT_FOUND
@@ -67,7 +66,7 @@ class TestDeleteWord:
             word=word
         )
 
-    def test_success(self, client: TestClient, mongodb):
+    def test_success(self, client: TestClient) -> None:
         word = 'word'
         resp = client.post(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_201_CREATED
@@ -85,8 +84,8 @@ class TestGetWords:
     URL = '/api/words'
 
     def test_get_words_default_parameters_only_words(
-            self, client: TestClient, mongodb, word_word
-    ):
+            self, client: TestClient, word_word
+    ) -> None:
         resp = client.get(self.URL)
         assert resp.status_code == status.HTTP_200_OK
         for item in resp.json()['items']:
@@ -94,8 +93,8 @@ class TestGetWords:
             assert 'word' in item
 
     def test_get_words_filtering_words_by_pattern(
-            self, client: TestClient, mongodb, word_word, word_five, word_final
-    ):
+            self, client: TestClient, word_word, word_five, word_final
+    ) -> None:
         # TODO (ibogretsov): rename search to filter (check backend)
         search_pattern = 'fi'
         search_params = {'search': search_pattern}
@@ -106,16 +105,15 @@ class TestGetWords:
         for item in resp.json()['items']:
             assert search_pattern in item['word']
 
-    @pytest.mark.parametrize('field,',
-        ('examples', 'definitions', 'translations')
-    )
+    @pytest.mark.parametrize('field,', (
+        'examples', 'definitions', 'translations'
+    ))
     def test_get_words_with_additional_fields(
             self,
             client: TestClient,
             field: str,
-            mongodb,
             word_word
-    ):
+    ) -> None:
         query_params = {field: True}
         resp = client.get(self.URL, params=query_params)
         assert resp.status_code == status.HTTP_200_OK
@@ -123,8 +121,8 @@ class TestGetWords:
             assert field in item
 
     def test_get_words_pagination(
-            self, client: TestClient, mongodb, word_word, word_five, word_final
-    ):
+            self, client: TestClient, word_word, word_five, word_final
+    ) -> None:
         # check size without query_params
         resp = client.get(self.URL)
         assert resp.status_code == status.HTTP_200_OK
