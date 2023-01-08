@@ -44,11 +44,6 @@ $ ./scripts/tests.sh
 $ ./scripts/stop.sh
 ```
 
-### Runing tests
-```bash
-$ docker-compose run --rm tests
-```
-
 ### API documentation
 When running the development server you may refer to the OpenApi documentation
 by visiting http://localhost:8000/docs.
