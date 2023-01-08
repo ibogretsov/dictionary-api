@@ -13,6 +13,9 @@ ARG REQUIREMENTS_FILE
 RUN pip install --upgrade pip
 RUN pip install -r "requirements/${REQUIREMENTS_FILE:=dev.txt}" && rm -rf requirements
 
+# Does not need anymore
+RUN apk del git
+
 RUN addgroup -g 1000 -S dictionary && \
     adduser -u 1000 -S dictionary -G dictionary
 

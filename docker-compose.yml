@@ -14,6 +14,8 @@ services:
 
   backend:
     tty: true
+    # uncomment if you need to exec something in container as root
+    # user: root
     stdin_open: true
     ports:
       - 8000:8000
@@ -32,6 +34,7 @@ services:
 
   tests:
     tty: true
+    # user: root
     stdin_open: true
     build:
       context: .
