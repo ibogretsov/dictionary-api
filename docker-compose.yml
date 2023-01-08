@@ -17,11 +17,27 @@ services:
       - 8000:8000
     build:
       context: .
+    image: &backend_image
+      dictionary-api_backend
     volumes:
       - .:/app:cached
     networks:
       - dictionary_api_network
     command: uvicorn app.main:app --host=0.0.0.0 --port=8000 --reload
+    env_file:
+      - .docker.base.env
+
+  tests:
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+    image: dictionary-api_backend-test
+    volumes:
+      - .:/app:cached
+    networks:
+      - dictionary_api_network
+    command: pytest .
     env_file:
       - .docker.base.env
 

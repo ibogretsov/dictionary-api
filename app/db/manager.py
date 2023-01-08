@@ -1,7 +1,7 @@
 from typing import Any, Mapping
 
-from pymongo.database import Database
 import pymongo
+from pymongo.database import Database
 from pymongo.results import DeleteResult
 from pymongo.results import InsertOneResult
 

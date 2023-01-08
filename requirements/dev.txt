@@ -1,1 +1,3 @@
 -rbase.txt
+pytest==7.2.0
+pytest-mock==3.10.0
