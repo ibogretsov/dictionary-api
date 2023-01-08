@@ -10,6 +10,18 @@ The goal of this API is to provide word definitions/translations taken from Goog
 
 ## Run local
 
+- Setup virtual environment. It installs project requirements, linters, tests to virtual environment. Nevertheless it will be better to run tests in container using script (Instructions below in README).
+```bash
+$ python3.10 -m venv .venv
+$ source .venv/bin/activate
+$ pip instal -r requirements/dev.txt
+```
+
+- Install pre-commit. It allows to check flake8 issues and imports before commit.
+```bash
+$ pre-commit install
+```
+
 - Setup build image
 ```bash
 $ ./scripts/setup.sh
@@ -19,6 +31,11 @@ $ ./scripts/setup.sh
 
 ```bash
 $ ./scripts/start.sh -d
+```
+
+- Run manually tests. *NOTE* tests will be run it container. It is preffered way.
+```bash
+$ ./scripts/tests.sh
 ```
 
 - Stop (stop and delete running containers)
