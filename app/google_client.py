@@ -18,14 +18,6 @@ class GoogleTranslateClient:
         self._target_language = target_language
         self._source_language = source_language
 
-    @property
-    def target_language(self) -> str:
-        return self._target_language
-
-    @property
-    def source_language(self) -> str:
-        return self._source_language
-
     def _translate_word(self, word: str) -> Translated:
         try:
             translated_data = self._translator.translate(
