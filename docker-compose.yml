@@ -34,7 +34,7 @@ services:
 
   tests:
     tty: true
-    # user: root
+    user: root
     stdin_open: true
     build:
       context: .
