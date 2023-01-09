@@ -24,24 +24,24 @@ $ pre-commit install
 
 - Setup build image
 ```bash
-$ ./scripts/setup.sh
+$ docker compose build --no-cache
 ```
 
-- Start (up docker containers). *NOTE* In docker-compose file there is a service for tests. So when you start docker compose up it will runs automatically tests.
+- Start (up docker containers). *NOTE* In docker-compose file there is a service for tests. So when you start docker compose up it will runs automatically tests (container dictionary-api-tests-1).
 
 ```bash
-$ ./scripts/start.sh -d
+$ docker compose up -d
 ```
 
 - Run manually tests. *NOTE* Tests will be run it container. It is preffered way.
 ```bash
-$ ./scripts/tests.sh
+$ docker start -a dictionary-api-tests-1
 ```
 
 - Stop (stop and delete running containers)
 
 ```bash
-$ ./scripts/stop.sh
+$ docker compose down
 ```
 
 ### API documentation
