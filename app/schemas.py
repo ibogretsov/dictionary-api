@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class SynonymValueModel(BaseModel):
-    type: str
+    context: str
     values: list[str]
 
 

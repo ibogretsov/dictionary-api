@@ -158,7 +158,7 @@ class Parser:
         # info like 'informal', 'archaic' etc (on transalte page these words
         # are highlighted with italic)
         general_synonyms: dict[str, str | list[str]] = {
-            'type': 'general',
+            'context': 'general',
             'values': []
         }
         for raw_synonym in raw_synonyms_data[0]:
@@ -170,10 +170,10 @@ class Parser:
         processed_synonyms.append(general_synonyms)
 
         # After general synonyms process all other synonyms (informal, archaic
-        # etc). At the end of each list is stored synonym type.
+        # etc). At the end of each list is stored synonym context.
         for other in raw_synonyms_data[1:]:
             processed_synonyms.append({
-                'type': other[-1][0][0],
+                'context': other[-1][0][0],
                 'values': [i[0] for i in other[:-1][0]]
             })
 

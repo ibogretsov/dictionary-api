@@ -62,11 +62,11 @@ PARSED_DEFINITIONS = [{
             'value': 'definition 4',
             'synonyms': [
                 {
-                    'type': 'general',
+                    'context': 'general',
                     'values': ['synonym 1', 'synonym 2', 'synonym 3']
                 },
                 {
-                    'type': 'specific domain',
+                    'context': 'specific domain',
                     'values': [
                         'domain specific synonym 1',
                         'domain specific synonym 2'
