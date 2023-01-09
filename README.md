@@ -14,7 +14,7 @@ The goal of this API is to provide word definitions/translations taken from Goog
 ```bash
 $ python3.10 -m venv .venv
 $ source .venv/bin/activate
-$ pip instal -r requirements/dev.txt
+$ pip install -r requirements/dev.txt
 ```
 
 - Install pre-commit. It allows to check flake8 issues and imports before commit.
@@ -27,7 +27,7 @@ $ pre-commit install
 $ ./scripts/setup.sh
 ```
 
-- Start (up docker containers). *NOTE* It runs automatically tests. Use flag `-d` to detach containers logs
+- Start (up docker containers). *NOTE* In docker-compose file there is a service for tests. So when you start docker compose up it will runs automatically tests.
 
 ```bash
 $ ./scripts/start.sh -d
