@@ -3,8 +3,8 @@ FROM python:3.10-alpine
 # It is required to install googletrans from source code
 RUN apk add git
 ENV DICTIONARY_API_MONGODB_URL=\
-    DICTIONARY_API_SOURCE_LANGUAGE='en'\
-    DICTIONARY_API_TARGET_LANGUAGE='ru'
+    DICTIONARY_API_SOURCE_LANGUAGE=en\
+    DICTIONARY_API_TARGET_LANGUAGE=ru
 
 COPY ./requirements ./requirements
 
