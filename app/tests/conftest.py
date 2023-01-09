@@ -2,7 +2,7 @@ from typing import Generator
 
 from fastapi import status
 from fastapi.testclient import TestClient
-from httpx import Response
+import httpx
 import pymongo
 from pymongo.database import Database
 import pytest
@@ -43,11 +43,11 @@ def client(mongodb: Database) -> Generator:
 
 
 @pytest.fixture
-def word_word(client: TestClient, mocker: MockerFixture) -> Response:
+def word_word(client: TestClient, mocker: MockerFixture) -> httpx.Response:
     word = 'word'
     return_value = (
         test_constants.WORD_WORD_EXP_RAW_TRANSLATE_DATA,
-        Response(status_code=status.HTTP_200_OK)
+        httpx.Response(status_code=status.HTTP_200_OK)
     )
     resp = test_utils.get_word_details(client, mocker, word, return_value)
     assert resp.status_code == status.HTTP_201_CREATED
@@ -55,11 +55,11 @@ def word_word(client: TestClient, mocker: MockerFixture) -> Response:
 
 
 @pytest.fixture
-def word_final(client: TestClient, mocker: MockerFixture) -> Response:
+def word_final(client: TestClient, mocker: MockerFixture) -> httpx.Response:
     word = 'final'
     return_value = (
         test_constants.WORD_FINAL_EXP_RAW_TRANSLATE_DATA,
-        Response(status_code=status.HTTP_200_OK)
+        httpx.Response(status_code=status.HTTP_200_OK)
     )
     resp = test_utils.get_word_details(client, mocker, word, return_value)
     assert resp.status_code == status.HTTP_201_CREATED
@@ -67,11 +67,11 @@ def word_final(client: TestClient, mocker: MockerFixture) -> Response:
 
 
 @pytest.fixture
-def word_five(client: TestClient, mocker: MockerFixture) -> Response:
+def word_five(client: TestClient, mocker: MockerFixture) -> httpx.Response:
     word = 'five'
     return_value = (
         test_constants.WORD_FIVE_EXP_RAW_TRANSLATE_DATA,
-        Response(status_code=status.HTTP_200_OK)
+        httpx.Response(status_code=status.HTTP_200_OK)
     )
     resp = test_utils.get_word_details(client, mocker, word, return_value)
     assert resp.status_code == status.HTTP_201_CREATED

@@ -1,6 +1,6 @@
 from fastapi import status
 from fastapi.testclient import TestClient
-from httpx import Response
+import httpx
 import pytest
 from pytest_mock import MockerFixture
 
@@ -32,7 +32,7 @@ class TestGetWordDetails:
         word = 'notexistingword'
         return_value = (
             test_constants.WORD_NOTEXISTINGWORD_EXP_RAW_TRANSLATE_DATA,
-            Response(status_code=status.HTTP_200_OK)
+            httpx.Response(status_code=status.HTTP_200_OK)
         )
         resp = test_utils.get_word_details(client, mocker, word, return_value)
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
@@ -44,13 +44,13 @@ class TestGetWordDetails:
         word = 'test'
         return_value = (
             test_constants.WORD_TEST_EXP_RAW_TRANSLATE_DATA,
-            Response(status_code=status.HTTP_200_OK)
+            httpx.Response(status_code=status.HTTP_200_OK)
         )
         resp = test_utils.get_word_details(client, mocker, word, return_value)
         assert resp.status_code == status.HTTP_201_CREATED
 
     def test_api_get_word_details_word_exists_in_db(
-            self, client: TestClient, word_word) -> None:
+            self, client: TestClient, word_word: httpx.Response) -> None:
         word = 'word'
         resp = client.post(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_200_OK
@@ -78,7 +78,9 @@ class TestDeleteWord:
             word=word
         )
 
-    def test_success(self, client: TestClient, word_word) -> None:
+    def test_success(
+            self, client: TestClient, word_word: httpx.Response
+    ) -> None:
         resp = client.delete(self.URL.format(word=word_word.json()['word']))
         assert resp.status_code == status.HTTP_204_NO_CONTENT
 
@@ -92,7 +94,7 @@ class TestGetWords:
     URL = '/api/words'
 
     def test_get_words_default_parameters_only_words(
-            self, client: TestClient, word_word
+            self, client: TestClient, word_word: httpx.Response
     ) -> None:
         resp = client.get(self.URL)
         assert resp.status_code == status.HTTP_200_OK
@@ -101,7 +103,10 @@ class TestGetWords:
             assert 'word' in item
 
     def test_get_words_filtering_words_by_pattern(
-            self, client: TestClient, word_word, word_five, word_final
+            self, client: TestClient,
+            word_word: httpx.Response,
+            word_five: httpx.Response,
+            word_final: httpx.Response
     ) -> None:
         # TODO (ibogretsov): rename search to filter (check backend)
         search_pattern = 'fi'
@@ -120,7 +125,7 @@ class TestGetWords:
             self,
             client: TestClient,
             field: str,
-            word_word
+            word_word: httpx.Response,
     ) -> None:
         query_params = {field: True}
         resp = client.get(self.URL, params=query_params)
@@ -129,7 +134,10 @@ class TestGetWords:
             assert field in item
 
     def test_get_words_pagination(
-            self, client: TestClient, word_word, word_five, word_final
+            self, client: TestClient,
+            word_word: httpx.Response,
+            word_five: httpx.Response,
+            word_final: httpx.Response
     ) -> None:
         # check size without query_params
         resp = client.get(self.URL)
