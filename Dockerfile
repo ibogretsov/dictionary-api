@@ -21,6 +21,8 @@ RUN addgroup -g 1000 -S dictionary && \
     adduser -u 1000 -S dictionary -G dictionary
 
 WORKDIR /app/
-COPY app/ ./
+COPY ./ ./app
 USER dictionary
 ENV PYTHONPATH=/app
+
+CMD [ "uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8000", "--reload" ]

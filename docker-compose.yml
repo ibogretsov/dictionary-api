@@ -21,14 +21,15 @@ services:
       - 8000:8000
     build:
       context: .
+      args:
+        - REQUIREMENTS_FILE=base.txt
     image: dictionary-api-backend-dev
     depends_on:
       - mongodb
     volumes:
-      - .:/app:cached
+      - .:/app/:cached
     networks:
       - dictionary_api_network
-    command: uvicorn app.main:app --host=0.0.0.0 --port=8000 --reload
     env_file:
       - .docker.base.env
 
@@ -38,6 +39,8 @@ services:
     stdin_open: true
     build:
       context: .
+      args:
+        - REQUIREMENTS_FILE=test.txt
     image: dictionary-api-backend-test
     depends_on:
       - mongodb

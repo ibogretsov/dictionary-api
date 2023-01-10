@@ -8,21 +8,11 @@ The goal of this API is to provide word definitions/translations taken from Goog
 - Python 3.10
 - [Docker](https://docs.docker.com/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/) for the development environment
 
-## Run local
+## Run project locally on your computer
 
-- Setup about virtual environment. It installs project requirements, linters and tests to the virtual environment. Nevertheless it will be better to run tests in container using script (Instructions below in README).
-```bash
-$ python3.10 -m venv .venv
-$ source .venv/bin/activate
-$ pip install -r requirements/dev.txt
-```
+### Project is fully dockerized. So to start it you just need few commands.
 
-- Install pre-commit. It allows to check flake8 issues and imports before commit.
-```bash
-$ pre-commit install
-```
-
-- Setup build image
+- Build docker images
 ```bash
 $ docker compose build --no-cache
 ```
@@ -33,7 +23,7 @@ $ docker compose build --no-cache
 $ docker compose up -d
 ```
 
-- Run manually tests. *NOTE* Tests will be run it container. It is preffered way.
+- You can run tests manually.
 ```bash
 $ docker start -a dictionary-api-tests-1
 ```
@@ -44,7 +34,7 @@ $ docker start -a dictionary-api-tests-1
 $ docker compose down
 ```
 
-### API documentation
+## API documentation
 When running the development server you may refer to the Swagger documentation by visiting http://localhost:8000/docs.
 
 ### Assumptions and Constraints
