@@ -21,7 +21,7 @@ RUN addgroup -g 1000 -S dictionary && \
     adduser -u 1000 -S dictionary -G dictionary
 
 WORKDIR /app/
-COPY ./ ./app
+COPY ./ ./
 USER dictionary
 ENV PYTHONPATH=/app
 

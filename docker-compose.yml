@@ -26,8 +26,11 @@ services:
     image: dictionary-api-backend-dev
     depends_on:
       - mongodb
-    volumes:
-      - .:/app/:cached
+    # Project data is already copied to the docker container. Uncomment for
+    # development purposes to avoid rebuilding docker image every time for each
+    # change in the code.
+    # volumes:
+    #   - .:/app/
     networks:
       - dictionary_api_network
     env_file:
@@ -44,8 +47,11 @@ services:
     image: dictionary-api-backend-test
     depends_on:
       - mongodb
-    volumes:
-      - .:/app:cached
+    # Project data is already copied to the docker container. Uncomment for
+    # development purposes to avoid rebuilding docker image every time for each
+    # change in the code.
+    # volumes:
+    #   - .:/app/
     networks:
       - dictionary_api_network
     command: pytest
