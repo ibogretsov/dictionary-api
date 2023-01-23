@@ -65,6 +65,9 @@ class Parser:
             self.parsed_data['definitions'] = self.__get_definitions(
                 self.raw_definitions
             )
+        # Need to avoid unexpected failure. So catch exceptions which can be
+        # raised during paring. And raise ParserError which will be handled
+        # in exception handler
         except (KeyError, ValueError, IndexError, TypeError):
             raise ParserError(constants.TRANSLATOR_CLIENT_ERROR)
         return self.parsed_data
@@ -90,8 +93,9 @@ class Parser:
     ) -> list[dict[str, str | list[str]]]:
         """Process translations.
 
-        Workflow pretty similar with exceptions just with one exclusion.
-        Translations are grouped by part of speech ('verb', 'noun', etc).
+        Workflow is pretty similar as we do for words examples just with one
+        exclusion. Translations are grouped by part of speech ('verb', 'noun',
+        etc).
         """
         processed_translations: list[dict[str, str | list[str]]] = []
         for raw_translation in raw_translations:
@@ -108,15 +112,16 @@ class Parser:
     ) -> list[dict[str, Any]]:
         """Process definitions. Slightly complicated process.
 
-        Synonyms are presented in definitions, so they will be stored with
-        definitions, because synonym without definition does not have logical
-        reason.
+        Synonyms and some examples are presented in definitions, so they will
+        be stored with definitions, because synonym without definition does not
+        have logical reason.
         """
 
         def _is_general_definition(definition: list[Any]) -> bool:
             return (len(definition) < 5 or not isinstance(definition[4], list))
 
         processed_definitions: list[dict[str, Any]] = []
+        # definitions are grouped by part of speech. So iterate by these groups
         for group_raw_definitions in raw_definitions:
             speech_part: str = group_raw_definitions[0]
             speech_part_definitions: dict[str, str | list[Any]] = {
@@ -124,13 +129,15 @@ class Parser:
                 'values': []
             }
             raw_definitions_data = group_raw_definitions[1]
+            # Within part of speech iterate by each raw definition which
+            # contains definition, possible synonyms and possible example
             for raw_definition in raw_definitions_data:
                 definition: dict[str, str | list[Any]] = {
                     'value': raw_definition[0]
                 }
                 if not _is_general_definition(raw_definition):
-                    definition['domains'] = [
-                        domain[0] for domain in raw_definition[4]
+                    definition['contexts'] = [
+                        context[0] for context in raw_definition[4]
                     ]
 
                 if len(raw_definition) >= 2 and raw_definition[1]:
@@ -154,9 +161,9 @@ class Parser:
     ) -> list[dict[str, str | list[str]]]:
         """Process synonyms for each definition."""
         processed_synonyms: list[dict[str, str | list[str]]] = []
-        # First process general synonyms, e.g. Synonyms withou any additional
-        # info like 'informal', 'archaic' etc (on transalte page these words
-        # are highlighted with italic)
+        # First process synonyms in general context, e.g. synonyms without any
+        # additional info like 'informal', 'archaic' etc (on transalte page
+        # these words are highlighted with italic)
         general_synonyms: dict[str, str | list[str]] = {
             'context': 'general',
             'values': []

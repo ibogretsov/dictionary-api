@@ -23,9 +23,8 @@ class WordDBManager:
             self,
             word_details: dict[str, Any]
     ) -> InsertOneResult:
-        result: InsertOneResult = self._collection.insert_one(
-            word_details
-        )
+        """Just insert word and return result of this insert."""
+        result: InsertOneResult = self._collection.insert_one(word_details)
         return result
 
     def get_word(self, word: str) -> Any:
@@ -43,6 +42,8 @@ class WordDBManager:
         **columns: Mapping[str, bool],
     ):
         search_params: dict[str, dict[str, str]] = {}
+        # if partial filtering exists and we have search patter. Filter
+        # words by this pattern. Add option 'i' to make search case-insensitive
         if search_pattern:
             search_params = {
                 'word': {
@@ -50,11 +51,13 @@ class WordDBManager:
                     '$options': 'i'
                 }
             }
-        exclude_columns_list: list[str] = ['_id']
+        # https://www.mongodb.com/docs/manual/tutorial/project-fields-from-query-results/#suppress-_id-field  # noqa
+        # by default return only words
+        columns_map: dict[str, int] = {'word': 1}
         for column, val in columns.items():
-            if not val:
-                exclude_columns_list.append(column)
+            if val:
+                columns_map[column] = 1
         result = (self._collection
-                      .find(search_params, {c: 0 for c in exclude_columns_list})
+                      .find(search_params, columns_map)
                       .sort('word', self.__sort_map[sort]))
         return list(result)

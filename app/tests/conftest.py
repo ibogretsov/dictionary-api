@@ -24,8 +24,14 @@ app.dependency_overrides[config.get_settings] = get_settings_override
 
 @pytest.fixture
 def mongodb(request: FixtureRequest) -> Database:
+    """Simple mongodb fixture which is used in tests instead of "production"
+    database.
 
-    def theardown():
+    After each test clean up database (remove all collections created in test).
+    To avoid unexpected results.
+    """
+
+    def theardown() -> None:
         for collection in db.list_collections():
             db.drop_collection(collection['name'])
 

@@ -7,7 +7,7 @@ class SynonymValueModel(BaseModel):
 
 
 class DefinitionValueModel(BaseModel):
-    domains: list[str] | None = None
+    contexts: list[str] | None = None
     value: str
     synonyms: list[SynonymValueModel] | None = None
     example: str | None = None

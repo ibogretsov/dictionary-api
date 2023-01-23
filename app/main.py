@@ -10,19 +10,20 @@ from app.exceptions import GoogleTranslateClientError
 from app.exceptions import ParserError
 
 
-def _generate_description():
+def _generate_description() -> str:
+    """Simple description for the project"""
     from googletrans import constants
 
     settings = config.get_settings()
-    source_language = constants.LANGUAGES.get(
+    source_language: str = constants.LANGUAGES.get(
         settings.dictionary_api_source_language
     ).capitalize()
-    target_language = constants.LANGUAGES.get(
+    target_language: str = constants.LANGUAGES.get(
         settings.dictionary_api_target_language
     ).capitalize()
-    description = f"""Simple API which provides for words for source
-        language {source_language} translations from {target_language},
-        definitions, synonyms and examples.
+    description: str = f"""Simple API which provides definitions, synonyms,
+        examples for {source_language} words and translations from
+        {target_language} for these words.
     """
     return description
 

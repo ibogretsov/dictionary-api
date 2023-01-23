@@ -25,7 +25,8 @@ router = APIRouter(prefix='/words', tags=['words'])
     '/{word}', response_model=schemas.WordInfo,
     responses={
         status.HTTP_201_CREATED: {
-            'description': 'Add word details in db and return results.',
+            'description': """Word does not exist in database. Add word and
+                              its details into database and return results.""",
             'content': {
                 'application/json': {
                     'schema': {'$ref': '#/components/schemas/WordInfo'}
@@ -38,13 +39,13 @@ def get_word_details(
         response: Response,
         word: str = Path(
             ...,
-            title='Word for details',
+            title='Target word',
             description="""Word for which you want to receive definitions,
                             translations, synonyms and examples""",
             regex=constants.SINGE_WORD_REGEX
         ),
         db: Database = Depends(deps.get_db),
-):
+) -> dict[str, str | Any] | Any:
     word_manager = manager.WordDBManager(db)
     word_info = word_manager.get_word(word)
     if word_info is None:
@@ -63,6 +64,8 @@ def get_word_details(
     '/',
     response_model=fa_pagination.Page[schemas.WordInfo],
     response_model_exclude_none=True,
+    description="""Return paginated response of words with additional fields
+    if needed."""
 )
 def get_words(
         search: str = Query(None),
@@ -103,8 +106,8 @@ def delete_word(
         word: str = Path(
             ...,
             title='Word to delete',
-            description="""Delete word an all its definitions,
-                            examples and translations""",
+            description="""Delete word, all its definitions, examples
+                            and translations""",
             regex=constants.SINGE_WORD_REGEX
         ),
         db: Database = Depends(deps.get_db)
