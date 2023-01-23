@@ -70,6 +70,9 @@ pre-commit install
 pre-commit run --all-files
 ```
 
+## Project style guide
+Current version of project does not have strong formatter like [Black](https://black.readthedocs.io/en/stable/index.html). But basic requirements of PEP8 standart are covered by flake8 and isort. Possible in the future will be added Black formatter or Yapf formatter to make project style more uniform.
+
 ## API documentation
 When running the development server you may refer to the Swagger documentation by visiting http://localhost:8000/docs.
 
