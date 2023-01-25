@@ -5,8 +5,8 @@ import pytest
 from pytest_mock import MockerFixture
 
 from app import constants
-from app.tests import constants as test_constants
-from app.tests import utils as test_utils
+from tests import constants as test_constants
+from tests import utils as test_utils
 
 
 class TestGetWordDetails:

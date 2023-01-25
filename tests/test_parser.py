@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 
 from app.data_parser import Parser
-from app.tests import constants
+from tests import constants
 
 
 @pytest.fixture
