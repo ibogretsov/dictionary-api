@@ -2,19 +2,17 @@ from typing import Any
 
 from fastapi import APIRouter
 from fastapi import Depends
-from fastapi import HTTPException
 from fastapi import Path
 from fastapi import Query
 from fastapi import status
 from fastapi.responses import Response
 import fastapi_pagination as fa_pagination
-from pymongo.database import Database
 
 from app import config
 from app import constants
 from app import deps
 from app import schemas
-from app.db import manager
+from app.db import managers
 from app.google_client import GoogleTranslateClient
 
 
@@ -44,10 +42,9 @@ def get_word_details(
                             translations, synonyms and examples""",
             regex=constants.SINGE_WORD_REGEX
         ),
-        db: Database = Depends(deps.get_db),
+        manager: managers.WordDBManager = Depends(deps.get_manager)
 ) -> dict[str, str | Any] | Any:
-    word_manager = manager.WordDBManager(db)
-    word_info = word_manager.get_word(word)
+    word_info = manager.get_word(word)
     if word_info is None:
         settings = config.get_settings()
         client = GoogleTranslateClient(
@@ -55,7 +52,7 @@ def get_word_details(
             settings.dictionary_api_target_language
         )
         word_info = client.get_word_info(word)
-        word_manager.insert_word_info(word_info)
+        manager.insert_word_info(word_info)
         response.status_code = status.HTTP_201_CREATED
     return word_info
 
@@ -73,10 +70,9 @@ def get_words(
         examples: bool = Query(False, title='Include examples'),
         definitions: bool = Query(False, title='Include definitions'),
         sort: constants.SortTypeEnum = Query(constants.SortTypeEnum.asc.value),
-        db: Database = Depends(deps.get_db)
+        manager: managers.WordDBManager = Depends(deps.get_manager)
 ) -> Any:
-    word_manager = manager.WordDBManager(db)
-    result = word_manager.get_words(
+    result = manager.get_words(
         sort,
         search_pattern=search,
         translations=translations,
@@ -110,13 +106,11 @@ def delete_word(
                             and translations""",
             regex=constants.SINGE_WORD_REGEX
         ),
-        db: Database = Depends(deps.get_db)
+        manager: managers.WordDBManager = Depends(deps.get_manager)
 ) -> Response:
-    word_manager = manager.WordDBManager(db)
-    result = word_manager.delete_word(word)
-    if result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=constants.WORD_NOT_FOUND.format(word=word)
-    )
+    manager.delete_word(word)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    # raise HTTPException(
+    #     status_code=status.HTTP_404_NOT_FOUND,
+    #     detail=constants.WORD_NOT_FOUND.format(word=word)
+    # )
