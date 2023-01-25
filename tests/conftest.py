@@ -9,7 +9,7 @@ import pytest
 from pytest import FixtureRequest
 from pytest_mock import MockerFixture
 
-from app.core import config
+from app import config
 from app.main import app
 from tests import constants as test_constants
 from tests import utils as test_utils

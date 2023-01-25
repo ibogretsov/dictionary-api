@@ -10,10 +10,10 @@ from fastapi.responses import Response
 import fastapi_pagination as fa_pagination
 from pymongo.database import Database
 
+from app import config
 from app import constants
 from app import deps
 from app import schemas
-from app.core import config
 from app.db import manager
 from app.google_client import GoogleTranslateClient
 

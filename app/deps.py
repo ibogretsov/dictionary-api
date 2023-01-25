@@ -4,7 +4,7 @@ from fastapi import Depends
 from pymongo import MongoClient
 from pymongo.database import Database
 
-from app.core import config
+from app import config
 
 
 def get_db(

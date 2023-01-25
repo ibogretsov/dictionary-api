@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi_pagination import add_pagination
 
 from app import api
-from app.core import config
+from app import config
 from app.exceptions import GoogleTranslateClientError
 from app.exceptions import ParserError
 
