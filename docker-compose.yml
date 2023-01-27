@@ -5,15 +5,18 @@ services:
     restart: unless-stopped
     volumes:
       - postgres_data_v15:/var/lib/postgresql/data
-    env_file:
-      - .docker.base.env
+      - ./postgres_init_scripts:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_USER=dictionary
+      - POSTGRES_PASSWORD=dictionary
+      - POSTGRES_DB=dictionary
     networks:
       - dictionary_api_network
-    # healthcheck:
-    #   test: pg_isready -U postgres -h 127.0.0.1
-    #   interval: 15s
-    #   timeout: 5s
-    #   start_period: 30s
+    healthcheck:
+      test: pg_isready -U postgres -h 127.0.0.1
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
     ports:
       - "5432:5432"
 
@@ -39,7 +42,7 @@ services:
     networks:
       - dictionary_api_network
     env_file:
-      - .docker.base.env
+      - .docker/.env.base
 
   tests:
     tty: true
@@ -61,7 +64,7 @@ services:
       - dictionary_api_network
     command: pytest
     env_file:
-      - .docker.base.env
+      - .docker/.env.test
 
 networks:
   dictionary_api_network:

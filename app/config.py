@@ -10,11 +10,11 @@ class Settings(pydantic.BaseSettings):
     DICTIONARY_API_TARGET_LANGUAGE: str
 
     # Database stuff
-    POSTGRES_HOST: str
-    POSTGRES_PORT: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
+    DICTIONARY_API_POSTGRES_HOST: str
+    DICTIONARY_API_POSTGRES_PORT: str
+    DICTIONARY_API_POSTGRES_USER: str
+    DICTIONARY_API_POSTGRES_PASSWORD: str
+    DICTIONARY_API_POSTGRES_DB: str
     SQLALCHEMY_DATABASE_URI: pydantic.PostgresDsn | None
 
     @pydantic.validator("SQLALCHEMY_DATABASE_URI", pre=True)
@@ -23,14 +23,15 @@ class Settings(pydantic.BaseSettings):
     ) -> Any:
         if isinstance(v, str):
             return v
-        return pydantic.PostgresDsn.build(
+        uri = pydantic.PostgresDsn.build(
             scheme="postgresql",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_HOST"),
-            port=values.get("POSTGRES_PORT"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
+            user=values.get("DICTIONARY_API_POSTGRES_USER"),
+            password=values.get("DICTIONARY_API_POSTGRES_PASSWORD"),
+            host=values.get("DICTIONARY_API_POSTGRES_HOST"),
+            port=values.get("DICTIONARY_API_POSTGRES_PORT", 5432),
+            path=f"/{values.get('DICTIONARY_API_POSTGRES_DB') or ''}",
         )
+        return uri
 
 
 @functools.lru_cache()
