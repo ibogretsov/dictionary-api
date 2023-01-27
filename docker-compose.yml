@@ -64,6 +64,7 @@ services:
       - dictionary_api_network
     command: pytest
     env_file:
+      - .docker/.env.base
       - .docker/.env.test
 
 networks:

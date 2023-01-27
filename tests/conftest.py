@@ -3,47 +3,40 @@ from typing import Generator
 from fastapi import status
 from fastapi.testclient import TestClient
 import httpx
-import pymongo
-from pymongo.database import Database
+from pydantic import PostgresDsn
 import pytest
 from pytest import FixtureRequest
 from pytest_mock import MockerFixture
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 from app import config
+from app.db import models
 from app.main import app
 from tests import constants as test_constants
 from tests import utils as test_utils
 
 
-def get_settings_override() -> config.Settings:
-    return config.Settings(db_name='testdb')  # type: ignore
+@pytest.fixture(scope='session')
+def sqlalchemy_connect_url() -> PostgresDsn | None:
+    return config.get_settings().SQLALCHEMY_DATABASE_URI
 
 
-app.dependency_overrides[config.get_settings] = get_settings_override
+@pytest.fixture()
+def db(request: FixtureRequest, connection: Engine) -> Session:
 
+    def fin() -> None:
+        session.query(models.Word).delete()
+        session.commit()
 
-@pytest.fixture
-def mongodb(request: FixtureRequest) -> Database:
-    """Simple mongodb fixture which is used in tests instead of "production"
-    database.
-
-    After each test clean up database (remove all collections created in test).
-    To avoid unexpected results.
-    """
-
-    def theardown() -> None:
-        for collection in db.list_collections():
-            db.drop_collection(collection['name'])
-
-    settings = get_settings_override()
-    client = pymongo.MongoClient(settings.dictionary_api_mongodb_url)
-    db = getattr(client, settings.db_name)
-    request.addfinalizer(theardown)
-    return db
+    session: Session = sessionmaker()(bind=connection)
+    request.addfinalizer(fin)
+    return session
 
 
 @pytest.fixture
-def client(mongodb: Database) -> Generator:
+def client(db: Session) -> Generator:
     with TestClient(app=app) as cl:
         yield cl
 

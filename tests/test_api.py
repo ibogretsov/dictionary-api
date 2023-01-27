@@ -74,7 +74,7 @@ class TestDeleteWord:
         word = 'word'
         resp = client.delete(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_404_NOT_FOUND
-        assert resp.json()['detail'] == constants.WORD_NOT_FOUND.format(
+        assert resp.json()['message'] == constants.WORD_NOT_FOUND.format(
             word=word
         )
 
