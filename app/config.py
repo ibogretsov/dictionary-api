@@ -5,8 +5,11 @@ import pydantic
 
 
 class Settings(pydantic.BaseSettings):
-    app_name: str = 'Dictionary API'
+    APP_NAME: str = 'Dictionary API'
+    DICTIONARY_API_SOURCE_LANGUAGE: str
+    DICTIONARY_API_TARGET_LANGUAGE: str
 
+    # Database stuff
     POSTGRES_HOST: str
     POSTGRES_PORT: str
     POSTGRES_USER: str
@@ -28,9 +31,6 @@ class Settings(pydantic.BaseSettings):
             port=values.get("POSTGRES_PORT"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
-
-    dictionary_api_source_language: str
-    dictionary_api_target_language: str
 
 
 @functools.lru_cache()

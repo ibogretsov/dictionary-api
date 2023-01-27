@@ -19,10 +19,10 @@ def _generate_description() -> str:
 
     settings = config.get_settings()
     source_language: str = constants.LANGUAGES.get(
-        settings.dictionary_api_source_language
+        settings.DICTIONARY_API_SOURCE_LANGUAGE
     ).capitalize()
     target_language: str = constants.LANGUAGES.get(
-        settings.dictionary_api_target_language
+        settings.DICTIONARY_API_TARGET_LANGUAGE
     ).capitalize()
     description: str = f"""Simple API which provides definitions, synonyms,
         examples for {source_language} words and translations from
@@ -31,7 +31,10 @@ def _generate_description() -> str:
     return description
 
 
-app = FastAPI(description=_generate_description())
+app = FastAPI(
+    title=config.get_settings().APP_NAME,
+    description=_generate_description()
+)
 app.include_router(api.api_router)
 add_pagination(app)
 

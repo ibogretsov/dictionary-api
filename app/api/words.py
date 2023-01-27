@@ -50,8 +50,8 @@ def get_word_details(
     except WordNotFoundError:
         settings = config.get_settings()
         client = GoogleTranslateClient(
-            settings.dictionary_api_source_language,
-            settings.dictionary_api_target_language
+            settings.DICTIONARY_API_SOURCE_LANGUAGE,
+            settings.DICTIONARY_API_TARGET_LANGUAGE
         )
         word_info = client.get_word_info(word)
         manager.insert_word_info(word_info)
