@@ -4,3 +4,7 @@ class GoogleTranslateClientError(Exception):
 
 class ParserError(Exception):
     """Error to raise if something in translated data could not parsed."""
+
+
+class WordNotFoundError(Exception):
+    pass

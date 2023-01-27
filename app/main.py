@@ -10,6 +10,7 @@ from app import database
 from app.db import models
 from app.exceptions import GoogleTranslateClientError
 from app.exceptions import ParserError
+from app.exceptions import WordNotFoundError
 
 
 def _generate_description() -> str:
@@ -66,4 +67,14 @@ def parser_exception_handler(
 ) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST, content={'message': str(exc)}
+    )
+
+
+@app.exception_handler(WordNotFoundError)
+def word_not_found_exception_handler(
+    request: Request,
+    exc: WordNotFoundError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND, content={'message': str(exc)}
     )

@@ -15,5 +15,5 @@ def get_db() -> Generator:
         db.close()
 
 
-def get_manager(db: Session = Depends(get_db)):
+def get_word_manager(db: Session = Depends(get_db)) -> managers.WordDBManager:
     return managers.WordDBManager(db)

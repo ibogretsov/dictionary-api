@@ -2,7 +2,9 @@ from typing import Any, Mapping
 
 from sqlalchemy.orm import Session
 
+from app import constants
 from app.db import models
+from app.exceptions import WordNotFoundError
 
 
 class WordDBManager:
@@ -25,11 +27,13 @@ class WordDBManager:
         return new_word
 
     def get_word(self, word: str) -> Any:
-        result = self._db.query(self._model).filter_by(word=word).first()
+        result = self._db.query(self._model).filter_by(word=word).one_or_none()
+        if not result:
+            raise WordNotFoundError(constants.WORD_NOT_FOUND.format(word=word))
         return result
 
     def delete_word(self, word: str):
-        result = self._db.query(self._model).filter_by(word=word).first()
+        result = self.get_word(word)
         self._db.delete(result)
         self._db.commit()
 

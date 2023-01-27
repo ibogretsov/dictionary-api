@@ -13,6 +13,7 @@ from app import constants
 from app import deps
 from app import schemas
 from app.db import managers
+from app.exceptions import WordNotFoundError
 from app.google_client import GoogleTranslateClient
 
 
@@ -42,10 +43,11 @@ def get_word_details(
                             translations, synonyms and examples""",
             regex=constants.SINGE_WORD_REGEX
         ),
-        manager: managers.WordDBManager = Depends(deps.get_manager)
+        manager: managers.WordDBManager = Depends(deps.get_word_manager)
 ) -> dict[str, str | Any] | Any:
-    word_info = manager.get_word(word)
-    if word_info is None:
+    try:
+        word_info = manager.get_word(word)
+    except WordNotFoundError:
         settings = config.get_settings()
         client = GoogleTranslateClient(
             settings.dictionary_api_source_language,
@@ -70,7 +72,7 @@ def get_words(
         examples: bool = Query(False, title='Include examples'),
         definitions: bool = Query(False, title='Include definitions'),
         sort: constants.SortTypeEnum = Query(constants.SortTypeEnum.asc.value),
-        manager: managers.WordDBManager = Depends(deps.get_manager)
+        manager: managers.WordDBManager = Depends(deps.get_word_manager)
 ) -> Any:
     result = manager.get_words(
         sort,
@@ -106,11 +108,7 @@ def delete_word(
                             and translations""",
             regex=constants.SINGE_WORD_REGEX
         ),
-        manager: managers.WordDBManager = Depends(deps.get_manager)
+        manager: managers.WordDBManager = Depends(deps.get_word_manager)
 ) -> Response:
     manager.delete_word(word)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-    # raise HTTPException(
-    #     status_code=status.HTTP_404_NOT_FOUND,
-    #     detail=constants.WORD_NOT_FOUND.format(word=word)
-    # )
