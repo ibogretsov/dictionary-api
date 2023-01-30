@@ -12,6 +12,8 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
+from alembic import command
+from alembic.config import Config
 from app import config
 from app.db import models
 from app.main import app
@@ -39,9 +41,6 @@ def db(request: FixtureRequest, connection: Engine) -> Session:
         session.commit()
 
     if request.config.getoption('--sqlalchemy-run-migrations'):
-        from alembic import command
-        from alembic.config import Config
-
         # TODO ibogretsov: Migrations should run only one time
         cfg: Config = Config('alembic.ini')
         command.upgrade(cfg, 'head')
