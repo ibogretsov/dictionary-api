@@ -54,7 +54,7 @@ def google_translator_exception_handler(
     exc: GoogleTranslateClientError
 ) -> JSONResponse:
     return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST, content={'message': str(exc)}
+        status_code=status.HTTP_400_BAD_REQUEST, content={'detail': str(exc)}
     )
 
 
@@ -64,7 +64,7 @@ def parser_exception_handler(
     exc: ParserError
 ) -> JSONResponse:
     return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST, content={'message': str(exc)}
+        status_code=status.HTTP_400_BAD_REQUEST, content={'detail': str(exc)}
     )
 
 
@@ -74,5 +74,5 @@ def word_not_found_exception_handler(
     exc: WordNotFoundError
 ) -> JSONResponse:
     return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND, content={'message': str(exc)}
+        status_code=status.HTTP_404_NOT_FOUND, content={'detail': str(exc)}
     )
