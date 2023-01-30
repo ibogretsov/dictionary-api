@@ -23,9 +23,14 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
+- Run migrations for the project. *NOTE* You have to run migrations only for backend. For tests it will be run automatically with first test
+```
+docker compose run --rm backend alembic upgrade head
+```
+
 - You can run tests manually.
 ```bash
-docker start -a dictionary-api-tests-1
+docker compose run --rm tests
 ```
 
 - Stop (stop and delete running containers)

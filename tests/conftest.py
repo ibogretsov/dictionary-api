@@ -1,5 +1,6 @@
 from typing import Generator
 
+from _pytest.config.argparsing import Parser
 from fastapi import status
 from fastapi.testclient import TestClient
 import httpx
@@ -18,6 +19,13 @@ from tests import constants as test_constants
 from tests import utils as test_utils
 
 
+def pytest_addoption(parser: Parser) -> None:
+    parser.addoption('--sqlalchemy-run-migrations',
+                     action='store_true',
+                     default=True,
+                     help='Run migrations before tests. Default True')
+
+
 @pytest.fixture(scope='session')
 def sqlalchemy_connect_url() -> PostgresDsn | None:
     return config.get_settings().SQLALCHEMY_DATABASE_URI
@@ -29,6 +37,14 @@ def db(request: FixtureRequest, connection: Engine) -> Session:
     def fin() -> None:
         session.query(models.Word).delete()
         session.commit()
+
+    if request.config.getoption('--sqlalchemy-run-migrations'):
+        from alembic import command
+        from alembic.config import Config
+
+        # TODO ibogretsov: Migrations should run only one time
+        cfg: Config = Config('alembic.ini')
+        command.upgrade(cfg, 'head')
 
     session: Session = sessionmaker()(bind=connection)
     request.addfinalizer(fin)
