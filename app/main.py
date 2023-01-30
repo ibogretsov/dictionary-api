@@ -6,8 +6,6 @@ from fastapi_pagination import add_pagination
 
 from app import api
 from app import config
-from app import database
-from app.db import models
 from app.exceptions import GoogleTranslateClientError
 from app.exceptions import ParserError
 from app.exceptions import WordNotFoundError
@@ -37,9 +35,6 @@ app = FastAPI(
 )
 app.include_router(api.api_router)
 add_pagination(app)
-
-# TODO (ibogretsov): use alembic
-models.Base.metadata.create_all(bind=database.engine)
 
 
 @app.get(
