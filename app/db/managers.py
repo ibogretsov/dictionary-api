@@ -42,10 +42,10 @@ class WordDBManager:
         sort: str,
         search_pattern: str | None = None,
         **columns: Mapping[str, bool],
-    ):
+    ) -> list[Any]:
         columns_list = [self._model.word]
-        for column, val in columns.items():
-            if val:
+        for column, to_return in columns.items():
+            if to_return:
                 columns_list.append(getattr(self._model, column))
         query = self._db.query(self._model).with_entities(*columns_list)
         if search_pattern:
