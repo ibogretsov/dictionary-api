@@ -41,7 +41,7 @@ def get_word_details(
             title='Target word',
             description="""Word for which you want to receive definitions,
                             translations, synonyms and examples""",
-            regex=constants.SINGE_WORD_REGEX
+            regex=constants.SINGLE_WORD_REGEX
         ),
         manager: managers.WordDBManager = Depends(deps.get_word_manager)
 ) -> dict[str, str | Any] | Any:
@@ -106,7 +106,7 @@ def delete_word(
             title='Word to delete',
             description="""Delete word, all its definitions, examples
                             and translations""",
-            regex=constants.SINGE_WORD_REGEX
+            regex=constants.SINGLE_WORD_REGEX
         ),
         manager: managers.WordDBManager = Depends(deps.get_word_manager)
 ) -> Response:

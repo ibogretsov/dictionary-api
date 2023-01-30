@@ -2,7 +2,7 @@ import enum
 
 
 # single 'I' is also a word
-SINGE_WORD_REGEX = r'(^[a-z]*|I)$'
+SINGLE_WORD_REGEX = r'(^[a-z]*|I)$'
 
 # Error messages
 NOT_VALID_WORD_TO_GET_INFO = (
