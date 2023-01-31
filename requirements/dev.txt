@@ -2,3 +2,4 @@
 flake8==6.0.0
 isort==5.11.4
 pre-commit==2.21.0
+pdbpp==0.10.3

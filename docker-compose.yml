@@ -30,7 +30,7 @@ services:
     build:
       context: .
       args:
-        - REQUIREMENTS_FILE=base.txt
+        - REQUIREMENTS_FILE=dev.txt
     image: dictionary-api-backend-dev
     depends_on:
       - postgres

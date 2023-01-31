@@ -21,14 +21,14 @@ router = APIRouter(prefix='/words', tags=['words'])
 
 
 @router.post(
-    '/{word}', response_model=schemas.WordInfo,
+    '/{word}', response_model=schemas.WordInfoModel,
     responses={
         status.HTTP_201_CREATED: {
             'description': """Word does not exist in database. Add word and
                               its details into database and return results.""",
             'content': {
                 'application/json': {
-                    'schema': {'$ref': '#/components/schemas/WordInfo'}
+                    'schema': {'$ref': '#/components/schemas/WordInfoModel'}
                 }
             }
         }
@@ -53,7 +53,7 @@ def get_word_details(
             settings.DICTIONARY_API_SOURCE_LANGUAGE,
             settings.DICTIONARY_API_TARGET_LANGUAGE
         )
-        word_info = client.get_word_info(word)
+        word_info = client.get_word_info(word).dict()
         manager.insert_word_info(word_info)
         response.status_code = status.HTTP_201_CREATED
     return word_info
@@ -61,7 +61,7 @@ def get_word_details(
 
 @router.get(
     '/',
-    response_model=fa_pagination.Page[schemas.WordInfo],
+    response_model=fa_pagination.Page[schemas.WordInfoModel],
     response_model_exclude_none=True,
     description="""Return paginated response of words with additional fields
     if needed."""

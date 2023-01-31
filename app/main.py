@@ -39,7 +39,7 @@ add_pagination(app)
 
 @app.get(
     '/',
-    summary='health check',
+    summary='Health Check',
     description=(
         'Simple healthchecker to be sure that everying was set up correct.'
     )

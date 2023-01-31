@@ -1,5 +1,6 @@
-from typing import Any, Mapping
+from typing import Any
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app import constants
@@ -19,8 +20,7 @@ class WordDBManager:
         self._db.add(new_word)
         try:
             self._db.commit()
-        # TODO: fix later
-        except Exception:
+        except IntegrityError as exc:  # noqa
             self._db.rollback()
         else:
             self._db.refresh(new_word)
@@ -41,7 +41,7 @@ class WordDBManager:
         self,
         sort: str,
         search_pattern: str | None = None,
-        **columns: Mapping[str, bool],
+        **columns: bool,
     ) -> list[Any]:
         columns_list = [self._model.word]
         for column, to_return in columns.items():

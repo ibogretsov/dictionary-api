@@ -1,8 +1,9 @@
 from pydantic import BaseModel
+from pydantic import Field
 
 
 class SynonymValueModel(BaseModel):
-    context: str
+    context: str = 'general'
     values: list[str]
 
     class Config:
@@ -19,27 +20,27 @@ class DefinitionValueModel(BaseModel):
         orm_mode = True
 
 
-class DefinitionModel(BaseModel):
+class DefinitionsModel(BaseModel):
     speech_part: str | None = None
-    values: list[DefinitionValueModel] | None = None
+    values: list[DefinitionValueModel] = Field(default_factory=list)
 
     class Config:
         orm_mode = True
 
 
-class Translation(BaseModel):
+class TranslationsModel(BaseModel):
     speech_part: str | None = None
-    values: list[str]
+    values: list[str] = Field(default_factory=list)
 
     class Config:
         orm_mode = True
 
 
-class WordInfo(BaseModel):
+class WordInfoModel(BaseModel):
     word: str
-    definitions: list[DefinitionModel] | None = None
+    definitions: list[DefinitionsModel] | None = None
     examples: list[str] | None = None
-    translations: list[Translation] | None = None
+    translations: list[TranslationsModel] | None = None
 
     class Config:
         orm_mode = True

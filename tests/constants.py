@@ -52,19 +52,26 @@ PARSED_EXAMPLES = [
 PARSED_DEFINITIONS = [{
     'speech_part': 'part of speech',
     'values': [
-        {'value': 'definition 1'},
+        {
+            'value': 'definition 1',
+            'contexts': None,
+            'synonyms': None,
+            'example': None},
         {
             'value': 'definition 2',
             'example': 'definition example',
             'contexts': ['context1', 'context2'],
+            'synonyms': None,
         },
         {
             'value': 'definition 3',
             'example': 'definition example',
-            'contexts': ['context3']
+            'contexts': ['context3'],
+            'synonyms': None,
         },
         {
             'value': 'definition 4',
+            'contexts': None,
             'synonyms': [
                 {
                     'context': 'general',
@@ -77,7 +84,8 @@ PARSED_DEFINITIONS = [{
                         'context specific synonym 2'
                     ]
                 }
-            ]
+            ],
+            'example': None
         },
     ]
 }]

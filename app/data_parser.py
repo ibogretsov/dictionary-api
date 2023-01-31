@@ -1,6 +1,7 @@
 from typing import Any
 
 from app import constants
+from app import schemas
 from app.exceptions import ParserError
 
 
@@ -90,26 +91,28 @@ class Parser:
     def __process_translations(
             self,
             raw_translations: list[Any]
-    ) -> list[dict[str, str | list[str]]]:
+    ) -> list[schemas.TranslationsModel]:
         """Process translations.
 
         Workflow is pretty similar as we do for words examples just with one
         exclusion. Translations are grouped by part of speech ('verb', 'noun',
         etc).
         """
-        processed_translations: list[dict[str, str | list[str]]] = []
+        processed_translations: list[schemas.TranslationsModel] = []
         for raw_translation in raw_translations:
             speech_part: str = raw_translation[0]
-            processed_translations.append({
-                'speech_part': speech_part,
-                'values': [tr[0] for tr in raw_translation[1]]
-            })
+            values: list[str] = [rt[0] for rt in raw_translation[1]]
+            tr = schemas.TranslationsModel(
+                speech_part=speech_part,
+                values=values
+            )
+            processed_translations.append(tr)
         return processed_translations
 
     def __get_definitions(
             self,
             raw_definitions: list[Any]
-    ) -> list[dict[str, Any]]:
+    ) -> list[schemas.DefinitionsModel]:
         """Process definitions. Slightly complicated process.
 
         Synonyms and some examples are presented in definitions, so they will
@@ -120,36 +123,35 @@ class Parser:
         def _is_general_definition(definition: list[Any]) -> bool:
             return (len(definition) < 5 or not isinstance(definition[4], list))
 
-        processed_definitions: list[dict[str, Any]] = []
+        processed_definitions: list[schemas.DefinitionsModel] = []
         # definitions are grouped by part of speech. So iterate by these groups
         for group_raw_definitions in raw_definitions:
             speech_part: str = group_raw_definitions[0]
-            speech_part_definitions: dict[str, str | list[Any]] = {
-                'speech_part': speech_part,
-                'values': []
-            }
+            speech_part_definitions = schemas.DefinitionsModel(
+                speech_part=speech_part
+            )
             raw_definitions_data = group_raw_definitions[1]
             # Within part of speech iterate by each raw definition which
             # contains definition, possible synonyms and possible example
             for raw_definition in raw_definitions_data:
-                definition: dict[str, str | list[Any]] = {
-                    'value': raw_definition[0]
-                }
+                definition = schemas.DefinitionValueModel(
+                    value=raw_definition[0]
+                )
                 if not _is_general_definition(raw_definition):
-                    definition['contexts'] = [
+                    definition.contexts = [
                         context[0] for context in raw_definition[4]
                     ]
 
                 if len(raw_definition) >= 2 and raw_definition[1]:
-                    definition['example'] = raw_definition[1]
+                    definition.example = raw_definition[1]
 
                 # There are synonyms. Synonyms are on place with index 6
                 if len(raw_definition) >= 6:
-                    definition['synonyms'] = self.__get_synonyms(
+                    definition.synonyms = self.__get_synonyms(
                         raw_definition[5]
                     )
 
-                speech_part_definitions['values'].append(definition)
+                speech_part_definitions.values.append(definition)
 
             processed_definitions.append(speech_part_definitions)
 
@@ -158,30 +160,24 @@ class Parser:
     def __get_synonyms(
             self,
             raw_synonyms_data: list[Any]
-    ) -> list[dict[str, str | list[str]]]:
+    ) -> list[schemas.SynonymValueModel]:
         """Process synonyms for each definition."""
-        processed_synonyms: list[dict[str, str | list[str]]] = []
+        processed_synonyms: list[schemas.SynonymValueModel] = []
         # First process synonyms in general context, e.g. synonyms without any
-        # additional info like 'informal', 'archaic' etc (on transalte page
+        # additional info like 'informal:', 'archaic:' etc (on transalte page
         # these words are highlighted with italic)
-        general_synonyms: dict[str, str | list[str]] = {
-            'context': 'general',
-            'values': []
-        }
-        for raw_synonym in raw_synonyms_data[0]:
-            if isinstance(raw_synonym, list):
-                for _raw_synonym in raw_synonym:
-                    general_synonyms['values'].append(_raw_synonym[0])
-            else:
-                general_synonyms['values'].append(raw_synonym[0])
-        processed_synonyms.append(general_synonyms)
-
+        for synonyms in raw_synonyms_data[0]:
+            values: list[str] = [syn[0] for syn in synonyms]
+            synonym: schemas.SynonymValueModel = schemas.SynonymValueModel(
+                values=values
+            )
+            processed_synonyms.append(synonym)
         # After general synonyms process all other synonyms (informal, archaic
         # etc). At the end of each list is stored synonym context.
         for other in raw_synonyms_data[1:]:
-            processed_synonyms.append({
-                'context': other[-1][0][0],
-                'values': [i[0] for i in other[:-1][0]]
-            })
+            values: list[str] = [i[0] for i in other[:-1][0]]
+            context = other[-1][0][0]
+            synonym = schemas.SynonymValueModel(context=context, values=values)
+            processed_synonyms.append(synonym)
 
         return processed_synonyms
