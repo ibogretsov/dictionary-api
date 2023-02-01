@@ -1,11 +1,11 @@
 from googletrans import Translator
 from googletrans.models import Translated
 
-from app import constants
-from app import schemas
-from app import validators
-from app.data_parser import Parser
-from app.exceptions import GoogleTranslateClientError
+from app.google import constants
+from app.google.data_parser import Parser
+from app.google.data_parser import WordInfo
+from app.google.exceptions import GoogleTranslateClientError
+from app.google.exceptions import NotValidWordError
 
 
 class GoogleTranslateClient:
@@ -26,16 +26,15 @@ class GoogleTranslateClient:
             )
         except Exception:
             raise GoogleTranslateClientError(constants.TRANSLATOR_CLIENT_ERROR)
-        validators.validate_translated_word(translated_data)
+        # If word is not valid then parsed data will have length less than 4.
+        # In this case we don't need to save data in the database or return some
+        # details about not existing word. Raise exception.
+        if len(translated_data.extra_data['parsed']) < 4:
+            raise NotValidWordError(constants.NOT_VALID_WORD_TO_GET_INFO)
         return translated_data
 
-    def get_word_info(self, word: str) -> schemas.WordInfoModel:
+    def get_word_info(self, word: str) -> WordInfo:
         translated_data = self._translate_word(word)
-        parser = Parser(translated_data.extra_data['parsed'][3])
-        parser.parse_data()
-        return schemas.WordInfoModel(
-            word=word,
-            examples=parser.parsed_data['examples'],
-            translations=parser.parsed_data['translations'],
-            definitions=parser.parsed_data['definitions']
-        )
+        parser = Parser(word, translated_data.extra_data['parsed'][3])
+        word_info = parser.parse_data()
+        return word_info

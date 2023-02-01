@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from app.data_parser import Parser
+from app.google.data_parser import Parser
 from tests import constants
 
 
@@ -26,6 +26,7 @@ def translated_data_translations() -> list[Any]:
 @pytest.fixture
 def parsed_data_translations() -> dict[str, Any]:
     return {
+        'word': 'test',
         'examples': [],
         'definitions': [],
         'translations': constants.PARSED_TRANSLATIONS
@@ -75,6 +76,6 @@ def parsed_data_all_fields(parsed_data_translations_and_examples):
 def test_parse_data(request, raw, exp):
     translated_data = request.getfixturevalue(raw)
     exp_data = request.getfixturevalue(exp)
-    parser = Parser(translated_data)
+    parser = Parser(exp_data['word'], translated_data)
     parsed = parser.parse_data()
     assert parsed == exp_data

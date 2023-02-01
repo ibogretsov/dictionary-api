@@ -14,7 +14,7 @@ from app import deps
 from app import schemas
 from app.db import managers
 from app.exceptions import WordNotFoundError
-from app.google_client import GoogleTranslateClient
+from app.google.client import GoogleTranslateClient
 
 
 router = APIRouter(prefix='/words', tags=['words'])
@@ -53,8 +53,8 @@ def get_word_details(
             settings.DICTIONARY_API_SOURCE_LANGUAGE,
             settings.DICTIONARY_API_TARGET_LANGUAGE
         )
-        word_info = client.get_word_info(word).dict()
-        manager.insert_word_info(word_info)
+        word_info = client.get_word_info(word)
+        manager.insert_word_info(word_info.dict())
         response.status_code = status.HTTP_201_CREATED
     return word_info
 

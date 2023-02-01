@@ -5,6 +5,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from app import constants
+from app.google import constants as google_constants
 from tests import constants as test_constants
 from tests import utils as test_utils
 
@@ -36,7 +37,9 @@ class TestGetWordDetails:
         )
         resp = test_utils.get_word_details(client, mocker, word, return_value)
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
-        assert resp.json()['detail'] == constants.NOT_VALID_WORD_TO_GET_INFO
+        assert (
+            resp.json()['detail'] == google_constants.NOT_VALID_WORD_TO_GET_INFO
+        )
 
     def test_api_get_word_details_first_from_api(
             self, client: TestClient, mocker: MockerFixture
@@ -63,7 +66,7 @@ class TestGetWordDetails:
         word = 'test'
         resp = client.post(self.URL.format(word=word))
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
-        assert resp.json()['detail'] == constants.TRANSLATOR_CLIENT_ERROR
+        assert resp.json()['detail'] == google_constants.TRANSLATOR_CLIENT_ERROR
 
 
 class TestDeleteWord:

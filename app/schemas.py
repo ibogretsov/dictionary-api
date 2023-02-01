@@ -1,46 +1,31 @@
 from pydantic import BaseModel
-from pydantic import Field
+
+from app.google import data_parser
 
 
-class SynonymValueModel(BaseModel):
-    context: str = 'general'
-    values: list[str]
-
-    class Config:
-        orm_mode = True
-
-
-class DefinitionValueModel(BaseModel):
-    contexts: list[str] | None = None
-    value: str
-    synonyms: list[SynonymValueModel] | None = None
-    example: str | None = None
+class DBBaseModel(BaseModel):
 
     class Config:
         orm_mode = True
 
 
-class DefinitionsModel(BaseModel):
-    speech_part: str | None = None
-    values: list[DefinitionValueModel] = Field(default_factory=list)
-
-    class Config:
-        orm_mode = True
+# Because we declare schemas manually during parse response from
+# translate.google page, we can reuse those schemas
+class SynonymValueModel(data_parser.SynonymValue, DBBaseModel):
+    pass
 
 
-class TranslationsModel(BaseModel):
-    speech_part: str | None = None
-    values: list[str] = Field(default_factory=list)
-
-    class Config:
-        orm_mode = True
+class DefinitionValueModel(data_parser.DefinitionValue, DBBaseModel):
+    pass
 
 
-class WordInfoModel(BaseModel):
-    word: str
-    definitions: list[DefinitionsModel] | None = None
-    examples: list[str] | None = None
-    translations: list[TranslationsModel] | None = None
+class DefinitionsModel(data_parser.Definitions, DBBaseModel):
+    pass
 
-    class Config:
-        orm_mode = True
+
+class TranslationsModel(data_parser.Translations, DBBaseModel):
+    pass
+
+
+class WordInfoModel(data_parser.WordInfo, DBBaseModel):
+    pass

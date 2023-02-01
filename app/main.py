@@ -6,9 +6,10 @@ from fastapi_pagination import add_pagination
 
 from app import api
 from app import config
-from app.exceptions import GoogleTranslateClientError
-from app.exceptions import ParserError
 from app.exceptions import WordNotFoundError
+from app.google.exceptions import GoogleTranslateClientError
+from app.google.exceptions import NotValidWordError
+from app.google.exceptions import ParserError
 
 
 def _generate_description() -> str:
@@ -75,4 +76,14 @@ def word_not_found_exception_handler(
 ) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND, content={'detail': str(exc)}
+    )
+
+
+@app.exception_handler(NotValidWordError)
+def not_valid_word_exception_handler(
+    request: Request,
+    exc: WordNotFoundError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST, content={'detail': str(exc)}
     )
