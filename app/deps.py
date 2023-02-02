@@ -7,13 +7,15 @@ from app import database
 from app.db import managers
 
 
-def get_db() -> Generator:
+async def get_db_session() -> Generator:
     db = database.session()
     try:
         yield db
     finally:
-        db.close()
+        await db.close()
 
 
-def get_word_manager(db: Session = Depends(get_db)) -> managers.WordDBManager:
-    return managers.WordDBManager(db)
+async def get_word_manager(
+    db_session: Session = Depends(get_db_session)
+) -> managers.WordDBManager:
+    return managers.WordDBManager(db_session)

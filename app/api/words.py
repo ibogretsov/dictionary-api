@@ -1,6 +1,7 @@
 from typing import Any
 
 from fastapi import APIRouter
+from fastapi import concurrency
 from fastapi import Depends
 from fastapi import Path
 from fastapi import Query
@@ -34,27 +35,29 @@ router = APIRouter(prefix='/words', tags=['words'])
         }
     },
     response_model_exclude_none=True)
-def get_word_details(
+async def get_word_details(
         response: Response,
         word: str = Path(
             ...,
             title='Target word',
             description="""Word for which you want to receive definitions,
                             translations, synonyms and examples""",
-            regex=constants.SINGLE_WORD_REGEX
+            regex=constants.SINGLE_WORD_PATTERN
         ),
         manager: managers.WordDBManager = Depends(deps.get_word_manager)
 ) -> dict[str, str | Any] | Any:
     try:
-        word_info = manager.get_word(word)
+        word_info = await manager.get_word(word)
     except WordNotFoundError:
         settings = config.get_settings()
         client = GoogleTranslateClient(
             settings.DICTIONARY_API_SOURCE_LANGUAGE,
             settings.DICTIONARY_API_TARGET_LANGUAGE
         )
-        word_info = client.get_word_info(word)
-        manager.insert_word_info(word_info.dict())
+        word_info = await concurrency.run_in_threadpool(
+            client.get_word_info, word
+        )
+        await manager.insert_word_info(word_info.dict())
         response.status_code = status.HTTP_201_CREATED
     return word_info
 
@@ -66,7 +69,7 @@ def get_word_details(
     description="""Return paginated response of words with additional fields
     if needed."""
 )
-def get_words(
+async def get_words(
         search: str = Query(None),
         translations: bool = Query(False, title='Include translations'),
         examples: bool = Query(False, title='Include examples'),
@@ -74,7 +77,7 @@ def get_words(
         sort: constants.SortTypeEnum = Query(constants.SortTypeEnum.asc.value),
         manager: managers.WordDBManager = Depends(deps.get_word_manager)
 ) -> Any:
-    result = manager.get_words(
+    result = await manager.get_words(
         sort,
         search_pattern=search,
         translations=translations,
@@ -100,15 +103,15 @@ def get_words(
         }
     }
 )
-def delete_word(
+async def delete_word(
         word: str = Path(
             ...,
             title='Word to delete',
             description="""Delete word, all its definitions, examples
                             and translations""",
-            regex=constants.SINGLE_WORD_REGEX
+            regex=constants.SINGLE_WORD_PATTERN
         ),
         manager: managers.WordDBManager = Depends(deps.get_word_manager)
 ) -> Response:
-    manager.delete_word(word)
+    await manager.delete_word(word)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

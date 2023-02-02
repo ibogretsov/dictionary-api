@@ -24,7 +24,7 @@ class Settings(pydantic.BaseSettings):
         if isinstance(v, str):
             return v
         uri = pydantic.PostgresDsn.build(
-            scheme="postgresql",
+            scheme="postgresql+asyncpg",
             user=values.get("DICTIONARY_API_POSTGRES_USER"),
             password=values.get("DICTIONARY_API_POSTGRES_PASSWORD"),
             host=values.get("DICTIONARY_API_POSTGRES_HOST"),

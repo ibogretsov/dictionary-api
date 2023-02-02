@@ -8,7 +8,7 @@ from pydantic import PostgresDsn
 import pytest
 from pytest import FixtureRequest
 from pytest_mock import MockerFixture
-from sqlalchemy.engine import Engine
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
@@ -29,15 +29,15 @@ def pytest_addoption(parser: Parser) -> None:
 
 
 @pytest.fixture(scope='session')
-def sqlalchemy_connect_url() -> PostgresDsn | None:
+def database_url() -> PostgresDsn | None:
     return config.get_settings().SQLALCHEMY_DATABASE_URI
 
 
 @pytest.fixture()
-def db(request: FixtureRequest, connection: Engine) -> Session:
+def db(request: FixtureRequest, connection: AsyncSession) -> Session:
 
     def fin() -> None:
-        session.query(models.Word).delete()
+        session.delete(models.Word).delete()
         session.commit()
 
     if request.config.getoption('--sqlalchemy-run-migrations'):
